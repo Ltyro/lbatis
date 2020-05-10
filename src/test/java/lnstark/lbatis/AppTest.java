@@ -16,31 +16,35 @@ import lnstark.lbatis.core.LDataSource;
 /**
  * Unit test for simple App.
  */
-public class AppTest extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+public class AppTest extends TestCase {
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
+	public void testMysql() {
+		LDataSource ds = new LDataSource();
+		Connection conn;
+		try {
+			conn = ds.getConnection();
+			String sql = "select name, id from user where name like ? ";
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, "%子");
+			ResultSet result = st.executeQuery();
+			while (result.next()) {
+				ResultSetMetaData md = result.getMetaData();
+				int columnCount = md.getColumnCount();
+				for (int i = 1; i <= columnCount; i++) {
+					String columnName = md.getColumnName(i);
+					Object n = result.getObject(i);
+					System.out.print(columnName + " " + n + " ");
+				}
+				System.out.println();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
     /**
      * Rigourous Test :-)
      */
-    public void testApp()
-    {
+    public void testApp() {
         LDataSource ds = new LDataSource();
         Connection conn;
         try {

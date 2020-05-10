@@ -1,10 +1,12 @@
 package lnstark.lbatis.core;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-public class SqlSession {
+public class SqlSession implements Closeable {
 
 	public <T> T getMapper(Class<T> clz) {
 		if(!clz.isInterface()) {
@@ -19,18 +21,41 @@ public class SqlSession {
 		return null;
 	}
 
-	private <T> T jdkProxy(Class<T> clz) {
-		MyProxy mp = new MyProxy();
-		return (T) Proxy.newProxyInstance(SqlSession.class.getClassLoader(), clz.getInterfaces(), mp);
+	private <T> T jdkProxy(Object obj) {
+		InvocationHandler lp = new LProxy(obj);
+		return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass().getInterfaces(), lp);
 	}
-	
-	class MyProxy implements InvocationHandler {
+
+	private <T> T jdkProxy(Class<T> clz) {
+		InvocationHandler lp = new LProxy(null);
+		return (T) Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, lp);
+	}
+
+	class LProxy implements InvocationHandler {
+
+		private Object subject;
+
+		/**
+		 * 构造方法，给我们要代理的真实对象赋初值
+		 */
+		public LProxy(Object subject)
+		{
+			this.subject = subject;
+		}
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			return method.invoke(proxy, args);
+			System.out.println("proxy" + LProxy.class + " execute method");
+			if(subject != null)
+				return method.invoke(subject, args);
+			return null;
 		}
 		
 	}
-	
+
+	@Override
+	public void close() throws IOException {
+
+	}
+
 }
