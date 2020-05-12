@@ -5,9 +5,16 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.sql.Connection;
+
+import javax.sql.DataSource;
 
 public class SqlSession implements Closeable {
 
+//	private DataSource dataSource = null;
+	
+	private Connection conn = null;
+	
 	public <T> T getMapper(Class<T> clz) {
 		if(!clz.isInterface()) {
 			try {
@@ -38,14 +45,14 @@ public class SqlSession implements Closeable {
 		/**
 		 * 构造方法，给我们要代理的真实对象赋初值
 		 */
-		public LProxy(Object subject)
-		{
+		public LProxy(Object subject) {
 			this.subject = subject;
 		}
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			System.out.println("proxy" + LProxy.class + " execute method");
+			System.out.println("proxy: " + LProxy.class + " execute method");
+			
 			if(subject != null)
 				return method.invoke(subject, args);
 			return null;
@@ -56,6 +63,22 @@ public class SqlSession implements Closeable {
 	@Override
 	public void close() throws IOException {
 
+	}
+
+//	public DataSource getDataSource() {
+//		return dataSource;
+//	}
+//
+//	public void setDataSource(DataSource dataSource) {
+//		this.dataSource = dataSource;
+//	}
+
+	public Connection getConn() {
+		return conn;
+	}
+
+	public void setConn(Connection conn) {
+		this.conn = conn;
 	}
 
 }

@@ -23,4 +23,5 @@ public class TestLBatis extends TestCase {
             e.printStackTrace();
         }
     }
+    
 }
