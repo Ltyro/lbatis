@@ -12,15 +12,15 @@ import javax.sql.DataSource;
 
 public class LDataSource implements DataSource {
 
-	private static String dirverClassName = "net.sourceforge.jtds.jdbc.Driver";
-	private String url = "jdbc:jtds:sqlserver://172.16.254.56:1433;DatabaseName=WENV_HZR;SelectMethod=Cursor;useLOBs=false";
-	private String username = "sa";
-	private String password = "fpi@123456";
+//	private static String dirverClassName = "net.sourceforge.jtds.jdbc.Driver";
+//	private String url = "jdbc:jtds:sqlserver://172.16.254.56:1433;DatabaseName=WENV_HZR;SelectMethod=Cursor;useLOBs=false";
+//	private String username = "sa";
+//	private String password = "fpi@123456";
 
-//	private static String dirverClassName = "com.mysql.cj.jdbc.Driver";
-//	private String url = "jdbc:mysql://127.0.0.1:3306/mydb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-//	private String username = "root";
-//	private String password = "123456";
+	private static String dirverClassName = "com.mysql.cj.jdbc.Driver";
+	private String url = "jdbc:mysql://127.0.0.1:3306/mydb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	private String username = "root";
+	private String password = "123456";
 
 	//连接池 
     private Vector<Connection> pool = new Vector<>();
@@ -83,7 +83,7 @@ public class LDataSource implements DataSource {
 	public Connection getConnection() throws SQLException {
 		synchronized (pool) {
             if (pool.size() > 0) 
-            	return pool.remove(0); 
+            	return pool.remove(0);
             return DriverManager.getConnection(url, username, password);
 		}
 	}
