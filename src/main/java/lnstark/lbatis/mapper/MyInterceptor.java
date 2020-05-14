@@ -25,6 +25,7 @@ public class MyInterceptor implements Interceptor {
         final BoundSql boundSql = statement.getBoundSql(parameter);
         String sql = boundSql.getSql();
         sql = "select top 10 * from hzr_river";
+        sql = "select * from song limit 0, 10";
      // 重新new一个查询语句对像
         BoundSql newBoundSql = new BoundSql(statement.getConfiguration(), sql, boundSql.getParameterMappings(), boundSql.getParameterObject());
         // 把新的查询放到statement里

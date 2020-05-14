@@ -49,25 +49,27 @@
 	</dependencies>
 	<build>
 		<resources>
-			<!-- 打包时将jsp文件拷贝到META-INF目录下 -->
 			<resource>
-				<!-- 项目中要处理的目录 -->
-				<!-- 指定resources插件处理哪个目录下的资源文件 -->
-				<directory>src/main/webapp</directory>
-				<!-- 打包之后要放在什么位置 -->
-				<!--注意此次必须要放在此目录下才能被访问到 -->
-				<targetPath>META-INF/resources</targetPath>
+				<directory>src/main/java</directory>
 				<includes>
-					<include>**/**</include>
+					<include>**/*.xml</include>
 				</includes>
+				<filtering>true</filtering>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/**</include>
-				</includes>
-				<filtering>false</filtering>
+				<filtering>true</filtering>
 			</resource>
 		</resources>
-	</build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import lnstark.lbatis.core.LDataSource;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.logging.jdk14.Jdk14LoggingImpl;
@@ -39,7 +40,7 @@ import lnstark.lbatis.mapper.MyLog;
  */
 public class App {
 	public static void main(String[] args) {
-		DataSource dataSource = new MyDataSource();
+		DataSource dataSource = new LDataSource();
 		TransactionFactory transactionFactory = new JdbcTransactionFactory();
 		LogFactory.useCustomLogging(MyLog.class);
 		Environment environment = new Environment("development", transactionFactory, dataSource);

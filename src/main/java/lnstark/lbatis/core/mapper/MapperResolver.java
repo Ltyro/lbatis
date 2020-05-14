@@ -1,6 +1,8 @@
 package lnstark.lbatis.core.mapper;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +36,11 @@ public class MapperResolver {
 	}
 
 	private Document setDocument(String xmlMapperPath) {
+		try {
+			xmlMapperPath = URLDecoder.decode(xmlMapperPath, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		File xmlMapper = new File(xmlMapperPath);
 		if(!xmlMapper.exists())
 			throw new SqlSessionException(xmlMapperPath + " not found!");

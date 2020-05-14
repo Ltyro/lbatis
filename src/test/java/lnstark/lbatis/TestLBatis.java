@@ -1,6 +1,9 @@
 package lnstark.lbatis;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,15 @@ public class TestLBatis extends TestCase {
 	private LLog log = LLog.getInstace(TestLBatis.class);
 	
     public void test() {
+        testLbatis();
+    }
+
+    public void testDecode() throws UnsupportedEncodingException {
+        String url = "/D:/DevelopmentKits/IntelliJ%20IDEA%202019.3.3/workspace/lbatis";
+        System.out.println(URLDecoder.decode(url, "UTF-8"));
+    }
+
+    public void testLbatis() {
         DataSource dataSource = new LDataSource();
         Configuration config = new Configuration(dataSource);
         SqlSessionFactory sessionFactory = new SqlSessionFactory(config);
@@ -26,11 +38,10 @@ public class TestLBatis extends TestCase {
             BlogMapper mapper = session.getMapper(BlogMapper.class);
             List<Map<String, Object>> l = mapper.selectBean("");
             for (Map<String, Object> m : l) {
-            	log.info(m);
+                log.info(m);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
 }
