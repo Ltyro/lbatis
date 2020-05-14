@@ -58,7 +58,9 @@ public class MapperResolver {
 	 * @throws ClassNotFoundException 
 	 */
 	public void parseMapper() throws ClassNotFoundException {
+		
 		Element root = document.getRootElement();
+		
 		for (Element e : root.elements()) {
 			String id = e.attributeValue("id");
 			if (Validator.isNull(id))
@@ -66,17 +68,21 @@ public class MapperResolver {
 			String parameterType = e.attributeValue("parameterType");
 			String resultType = e.attributeValue("resultType");
 			MapperNode node = new MapperNode(id);
+			
 			if (!Validator.isNull(parameterType)) {
 				Class<?> c = Class.forName(parameterType);
 				node.parameterType = c;
 			}
+			
 			if (!Validator.isNull(resultType)) {
 				Class<?> c = Class.forName(resultType);
 				node.resultType = c;
 			}
 			
+			node.content = e.getStringValue();
 			nodes.put(id, node);
 		}
+		
 	}
 	
 	class MapperNode {

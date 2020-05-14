@@ -3,6 +3,7 @@ package lnstark.lbatis.util;
 import java.util.Date;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +36,12 @@ public class LLog {
 		cache.put(clz, llog);
 		return llog;
 	}
-	
+
 	private LLog(Class<?> clz) {
+		this.clzName = getNameByClz(clz);
+	}
+	
+	private String getNameByClz(Class<?> clz) {
 		String sp = ".", clzName = "";
 		String fullName = clz.getName();
 		String[] paths = fullName.split("\\" + sp);
@@ -44,44 +49,82 @@ public class LLog {
 			clzName += (paths[i].charAt(0) + sp);
 		}
 		clzName += clz.getSimpleName();
-		this.clzName = clzName;
+		return clzName;
 	}
 	
-	private String constructMsg(String msg, String level) {
+	private String getNameByMethod(Method method) {
+		String sp = ".";
+		StringBuilder sb = new StringBuilder();
+		Class<?> clz = method.getClass();
+		String fullName = clz.getName();
+		String[] paths = fullName.split("\\" + sp);
+		for (int i = 0; i < paths.length - 1; i++) {
+			sb.append(paths[i].charAt(0)).append(sp);
+		}
+		sb.append(clz.getSimpleName().substring(0, 1).toUpperCase()).append(sp)
+			.append(method.getName());
+		return sb.toString();
+	}
+	
+	private String constructMsg(String msg, String level, Method method) {
 		StringBuilder sb = new StringBuilder();
 		String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
 		sb.append(time)
 			.append(String.format("%6s", level))
 			.append(String.format("%6s", getProcessID()))
 			.append("  ")
-			.append(String.format("%1$-35s", clzName))
+			.append(String.format("%1$-35s", method == null ? clzName : getNameByMethod(method)))
 			.append(": ")
 			.append(msg);
 		return sb.toString();
 	}
 
-	public void debug(String msg) {
+	public void debug(Object msg) {
 		if (level < DEBUG_LEVEL)
 			return;
-		System.out.println(constructMsg(msg, "DEBUG"));
+		System.out.println(constructMsg(msg.toString(), "DEBUG", null));
 	}
 	
-	public void info(String msg) {
+	public void debug(Object msg, Method method) {
+		if (level < DEBUG_LEVEL)
+			return;
+		System.out.println(constructMsg(msg.toString(), "DEBUG", method));
+	}
+	
+	public void info(Object msg) {
 		if (level < INFO_LEVEL)
 			return;
-		System.out.println(constructMsg(msg, "INFO"));
-	}
-	
-	public void warn(String msg) {
-		if (level < WARN_LEVEL)
-			return;
-		System.out.println(constructMsg(msg, "WARN"));
+		System.out.println(constructMsg(msg.toString(), "INFO", null));
 	}
 
-	public void error(String msg) {
+	public void info(Object msg, Method method) {
+		if (level < INFO_LEVEL)
+			return;
+		System.out.println(constructMsg(msg.toString(), "INFO", method));
+	}
+	
+	public void warn(Object msg) {
+		if (level < WARN_LEVEL)
+			return;
+		System.out.println(constructMsg(msg.toString(), "WARN", null));
+	}
+
+	public void warn(Object msg, Method method) {
+		if (level < WARN_LEVEL)
+			return;
+		System.out.println(constructMsg(msg.toString(), "WARN", method));
+	}
+	
+	public void error(Object msg) {
 		if (level < ERROR_LEVEL)
 			return;
-		System.out.println(constructMsg(msg, "ERROR"));
+		System.out.println(constructMsg(msg.toString(), "ERROR", null));
+	}
+	
+	public void error(Object msg, Method method) {
+		if (level < ERROR_LEVEL)
+			return;
+		System.out.println(constructMsg(msg.toString(), "ERROR", method));
 	}
 	
 	public static void setLevel(int l) {
@@ -93,4 +136,5 @@ public class LLog {
         return Integer.valueOf(runtimeMXBean.getName().split("@")[0])  
                 .intValue();  
     }
+	
 }

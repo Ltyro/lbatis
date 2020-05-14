@@ -7,12 +7,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import lnstark.lbatis.core.mapper.MapperWrapper;
+import lnstark.lbatis.util.LLog;
 
 public class SqlSession implements Closeable {
 
+	private LLog log = LLog.getInstace(SqlSession.class);
+	
 	private Connection conn = null;
 	
 	private MapperWrapper mapperWrapper;
@@ -57,7 +61,7 @@ public class SqlSession implements Closeable {
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-			System.out.println("proxy: " + LProxy.class + " execute method");
+			log.info("proxy: " + LProxy.class + " execute method");
 
 			Object result = executeMethod(method, args);
 
@@ -72,13 +76,16 @@ public class SqlSession implements Closeable {
 
 	private Object executeMethod(Method method, Object[] args) {
 		String sql = mapperWrapper.getSql(method, args);
+		log.debug("==>  Preparing: " + sql.trim(), method);
+		Object result = null;
 		try {
-			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.executeQuery();
-		} catch (SQLException e) {
+			PreparedStatement statement = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			ResultSet resultSet = statement.executeQuery();
+			result = mapperWrapper.parseResult(resultSet, method);
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return result;
 	}
 
 	@Override
