@@ -42,9 +42,10 @@ public class MapperWrapper {
 
 	public String getSql(Method method, Object[] args) {
 		String methodName = method.getName();
-		return mapperResolver.getSql(methodName, args);
+		String sourceSql = mapperResolver.getSql(methodName, args);
+		return sourceSql;
 	}
-
+	
 	/**
 	 * parse result set
 	 * 

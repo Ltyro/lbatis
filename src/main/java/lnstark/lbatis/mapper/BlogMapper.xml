@@ -4,6 +4,18 @@
 	  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="lnstark.lbatis.mapper.BlogMapper">
 	<select id="selectBean" resultType="java.util.Map">
-    	select * from song t
+    	select top 10 * from hzr_river t
+    	where id name like '%' + #{name, jdbcType=VARCHAR} + '%'
+	</select>
+	
+	<select id="selectLBatisBean" resultType="java.util.Map">
+    	select top 10 * from hzr_river t
+    	where id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectLBatisBeanByMap" resultType="java.util.Map">
+    	select top 10 * from hzr_river t
+    	where name like '%' + #{name, jdbcType=VARCHAR} + '%'
+    	and exan_status = #{status}
 	</select>
 </mapper>

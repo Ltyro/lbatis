@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Log (combine Factory and Log)
  * 
- * @author 	Zaoji_Lai   
+ * @author 	Lnstark   
  * @since 	1.0
  * @date 	2020年5月13日
  */
@@ -72,7 +72,9 @@ public class LLog {
 		sb.append(time)
 			.append(String.format("%6s", level))
 			.append(String.format("%6s", getProcessID()))
-			.append("  ")
+			.append(" --- [")
+			.append(String.format("%15s", Thread.currentThread().getName()))
+			.append("] ")
 			.append(String.format("%1$-35s", method == null ? clzName : getNameByMethod(method)))
 			.append(": ")
 			.append(msg);

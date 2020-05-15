@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import lnstark.lbatis.core.mapper.MapperWrapper;
+import lnstark.lbatis.core.mapper.SqlParseResult;
+import lnstark.lbatis.core.mapper.SqlParser;
 import lnstark.lbatis.util.LLog;
 
 public class SqlSession implements Closeable {
@@ -76,10 +78,13 @@ public class SqlSession implements Closeable {
 
 	private Object executeMethod(Method method, Object[] args) {
 		String sql = mapperWrapper.getSql(method, args);
+		SqlParseResult sqlParseResult = new SqlParser(sql, method, args).parse();
 		log.debug("==>  Preparing: " + sql.trim(), method);
 		Object result = null;
 		try {
-			PreparedStatement statement = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			PreparedStatement statement = conn.prepareStatement(sqlParseResult.getPrepareSql(), ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			sqlParseResult.fillStatement(statement);
+			
 			ResultSet resultSet = statement.executeQuery();
 			result = mapperWrapper.parseResult(resultSet, method);
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {

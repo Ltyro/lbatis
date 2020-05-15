@@ -1,9 +1,6 @@
 package lnstark.lbatis;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -16,27 +13,25 @@ import lnstark.lbatis.core.SqlSession;
 import lnstark.lbatis.core.SqlSessionFactory;
 import lnstark.lbatis.mapper.BlogMapper;
 import lnstark.lbatis.util.LLog;
+import lnstark.lbatis.util.StringUtil;
 
 public class TestLBatis extends TestCase {
 
-	private LLog log = LLog.getInstace(TestLBatis.class);
+	private static LLog log = LLog.getInstace(TestLBatis.class);
 	
-    public void test() {
-        testLbatis();
-    }
-
-    public void testDecode() throws UnsupportedEncodingException {
-        String url = "/D:/DevelopmentKits/IntelliJ%20IDEA%202019.3.3/workspace/lbatis";
-        System.out.println(URLDecoder.decode(url, "UTF-8"));
-    }
-
-    public void testLbatis() {
+	public static void main(String[] args) {
+//		String s = "asfas#{asd, jdbcType=VARCHAR}ASD";
+//		log.info(s.replaceFirst(StringUtil.transRegExp2Str("#{asd, jdbcType=VARCHAR}"), "?"));
+		testLbatis();
+	}
+	
+    public static void testLbatis() {
         DataSource dataSource = new LDataSource();
         Configuration config = new Configuration(dataSource);
         SqlSessionFactory sessionFactory = new SqlSessionFactory(config);
         try (SqlSession session = sessionFactory.openSession()) {
             BlogMapper mapper = session.getMapper(BlogMapper.class);
-            List<Map<String, Object>> l = mapper.selectBean("");
+            List<Map<String, Object>> l = mapper.selectLBatisBean("001d1d6b6f8d43bca87c8b66e43bfd0a");
             for (Map<String, Object> m : l) {
                 log.info(m);
             }
@@ -44,4 +39,5 @@ public class TestLBatis extends TestCase {
             e.printStackTrace();
         }
     }
+    
 }

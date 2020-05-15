@@ -9,4 +9,7 @@ public interface BlogMapper {
 
 	List<Map<String, Object>> selectBean(@Param("id") String id);
 
+	List<Map<String, Object>> selectLBatisBean(@lnstark.lbatis.core.annotation.Param("id") String id);
+	
+	List<Map<String, Object>> selectLBatisBeanByMap(Map<String, Object> param);
 }

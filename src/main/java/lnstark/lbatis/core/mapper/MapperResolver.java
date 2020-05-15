@@ -15,6 +15,13 @@ import lnstark.lbatis.exception.MapperParseException;
 import lnstark.lbatis.exception.SqlSessionException;
 import lnstark.lbatis.util.Validator;
 
+/**
+ * 
+ * 
+ * @author 	Lnstark   
+ * @since 	1.0
+ * @date 	2020年5月13日
+ */
 public class MapperResolver {
 
 	private String xmlMapperPath;
