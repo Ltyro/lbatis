@@ -82,8 +82,8 @@ public class MapperWrapper {
 		resultSet.last();
 		size = resultSet.getRow();
 		resultSet.beforeFirst();
-		log.debug("<==      Total: " + size);
-		if (size < 2 && !singleResult)
+		log.debug("<==      Total: " + size, method);
+		if (size > 1 && singleResult)
 			throw new MapperParseException("query result is more than one.");
 		
 		if (!singleResult) {
@@ -113,27 +113,10 @@ public class MapperWrapper {
 		return resultObj;
 	}
 
-	public List<Map<String, Object>> get() {
-		return null;
-	}
-	
-	public static void main(String[] args) throws NoSuchMethodException, SecurityException {
-		Method m = MapperWrapper.class.getDeclaredMethod("get");
-		List<Map<String, Object>> l = new ArrayList<>();
-		Type type = m.getGenericReturnType();
-		if (type instanceof ParameterizedType) {
-			Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
-			String typeName = actualTypeArguments[0].getTypeName();
-			System.out.println(typeName);
-		}
-		
-	}
-	
 	private String removeGeneric(String name) {
 		int firstLTIndex = name.indexOf("<");
 		return firstLTIndex == -1 ? name : name.substring(0, firstLTIndex);
 	}
-	
-	
+
 	
 }

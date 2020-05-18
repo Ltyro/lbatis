@@ -55,9 +55,10 @@ public class SqlParser {
 		String prepareSql = "";
 		List<Object> params = new ArrayList<>();
 		
-		final char sharp = '#', dollar = '$', lb = '{', rb = '}', qm = '?';
+		final char sharp = '#', dollar = '$', lb = '{', rb = '}', qm = '?', comma = ',';
 		
 		String tempSql = sourceSql;
+		tempSql = tempSql.replace("\n", " ");// replace "\n" with space
 		int fromIndex = 0;
 		int start = 0, end = 0;
 		// parse #{XXX}
@@ -69,12 +70,18 @@ public class SqlParser {
 			end = tempSql.indexOf(rb, start);
 			if (end == -1)
 				throw new SqlParseException("A \"#{\" is not closed.", sourceSql);
-			fromIndex = end;
+			fromIndex = start;
 			// the content of #{XXX}
-			String braceContent = tempSql.substring(start + 1, end);
-			params.add(braceContent);
+			String braceContent = tempSql.substring(start + 2, end);
+			if (!Validator.isNull(braceContent)) {
+				String pr = braceContent;
+				if (pr.indexOf(comma) > -1)
+					pr = pr.split(String.valueOf(comma))[0];
+				params.add(param2ValueMap.get(pr));
+			}
+
 			String contentWithBrace = new StringBuilder().append(sharp).append(lb).append(braceContent).append(rb).toString();
-			tempSql = tempSql.replaceFirst(StringUtil.transRegExp2Str(contentWithBrace), qm + "");
+			tempSql = tempSql.replaceFirst(StringUtil.transRegExp2Str(contentWithBrace), String.valueOf(qm));
 		}
 		
 		// parse ${XXX}
@@ -87,10 +94,10 @@ public class SqlParser {
 			end = tempSql.indexOf(rb, start);
 			if (end == -1)
 				throw new SqlParseException("A \"${\" is not closed.", sourceSql);
-			fromIndex = end;
+			fromIndex = start;
 			// the content of ${XXX}
-			String braceContent = tempSql.substring(start + 1, end);
-			params.add(braceContent);
+			String braceContent = tempSql.substring(start + 2, end);
+
 			Object contentObj = param2ValueMap.get(braceContent);
 			if(contentObj == null)
 				continue;

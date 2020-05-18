@@ -1,6 +1,7 @@
 package lnstark.lbatis;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,10 @@ public class TestLBatis extends TestCase {
         SqlSessionFactory sessionFactory = new SqlSessionFactory(config);
         try (SqlSession session = sessionFactory.openSession()) {
             BlogMapper mapper = session.getMapper(BlogMapper.class);
-            List<Map<String, Object>> l = mapper.selectLBatisBean("001d1d6b6f8d43bca87c8b66e43bfd0a");
+            Map<String, Object> param = new HashMap<>();
+            param.put("name", "天");
+            param.put("id", 1);
+            List<Map<String, Object>> l = mapper.selectLBatisBeanByMap(param);
             for (Map<String, Object> m : l) {
                 log.info(m);
             }

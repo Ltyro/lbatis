@@ -9,13 +9,13 @@
 	</select>
 	
 	<select id="selectLBatisBean" resultType="java.util.Map">
-    	select top 10 * from hzr_river t
-    	where id = #{id, jdbcType=VARCHAR}
+    	select * from song t
+    	where id = #{id, jdbcType=VARCHAR} limit 0, 10
 	</select>
 	
 	<select id="selectLBatisBeanByMap" resultType="java.util.Map">
-    	select top 10 * from hzr_river t
-    	where name like '%' + #{name, jdbcType=VARCHAR} + '%'
-    	and exan_status = #{status}
+    	select * from song t
+    	where name like concat('%', #{name, jdbcType=VARCHAR}, '%')
+    	and id = #{id}
 	</select>
 </mapper>

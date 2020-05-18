@@ -29,6 +29,8 @@ public class Validator {
 	 * @return
 	 */
 	public static boolean implementInterface(Class<?> clz, Class<?> itface) {
+		if (clz == itface)
+			return true;
 		Class<?>[] is = clz.getInterfaces();
 		for (Class<?> i : is) {
 			if(i == itface)
