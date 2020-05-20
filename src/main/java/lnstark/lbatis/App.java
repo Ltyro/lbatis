@@ -5,8 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -14,20 +12,15 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import lnstark.lbatis.core.LDataSource;
-import org.apache.ibatis.logging.Log;
+import lnstark.lbatis.core.configuration.LDataSource;
 import org.apache.ibatis.logging.LogFactory;
-import org.apache.ibatis.logging.jdk14.Jdk14LoggingImpl;
 import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import org.xml.sax.SAXException;
 
 
 import lnstark.lbatis.mapper.BlogMapper;

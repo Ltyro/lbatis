@@ -6,12 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import lnstark.lbatis.core.LDataSource;
+import lnstark.lbatis.core.configuration.LDataSource;
 
 /**
  * Unit test for simple App.

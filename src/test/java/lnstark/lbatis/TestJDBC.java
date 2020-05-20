@@ -7,7 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
-import lnstark.lbatis.core.LDataSource;
+import lnstark.lbatis.core.configuration.LDataSource;
 
 public class TestJDBC extends TestCase {
 	

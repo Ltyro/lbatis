@@ -1,5 +1,6 @@
 package lnstark.lbatis.core.mapper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -12,10 +13,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
-import lnstark.lbatis.exception.MapperParseException;
-import lnstark.lbatis.util.LLog;
+import lnstark.lbatis.core.exception.MapperParseException;
+import lnstark.lbatis.core.exception.ResultParseException;
+import lnstark.lbatis.core.util.LLog;
+import lnstark.lbatis.core.util.StringUtil;
 
 /**
  * For resolving mapper.xml and binding interface
@@ -58,7 +60,7 @@ public class MapperWrapper {
 	 * @throws ClassNotFoundException 
 	 */
 //	@SuppressWarnings("rawtypes")
-	public Object parseResult(ResultSet resultSet, Method method) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public Object parseResult(ResultSet resultSet, Method method) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
 		Object resultObj = null;
 		List resultList = null;
 		boolean singleResult = false;
@@ -102,6 +104,29 @@ public class MapperWrapper {
 						String columnName = md.getColumnName(i);
 						Object value = resultSet.getObject(i);
 						result.put(columnName, value);
+					}
+					resultList.add(result);
+				}
+				return resultList;
+			} else {
+				while (resultSet.next()) {
+					ResultSetMetaData md = resultSet.getMetaData();
+					int columnCount = md.getColumnCount();
+
+					Object result = null;
+					result = beanClz.newInstance();
+
+					for (int i = 1; i <= columnCount; i++) {
+						String columnName = md.getColumnName(i);
+						Object value = resultSet.getObject(i);
+						Method m = null;
+						String methodName = StringUtil.getSetter(columnName);
+						try {
+							m = beanClz.getMethod(methodName, Class.forName(md.getColumnClassName(i)));
+						} catch (NoSuchMethodException e) {
+							throw new ResultParseException("method \"" + methodName + "\" not found.");
+						}
+						m.invoke(result, value);
 					}
 					resultList.add(result);
 				}

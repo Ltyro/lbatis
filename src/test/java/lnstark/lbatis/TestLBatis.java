@@ -8,13 +8,13 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import junit.framework.TestCase;
-import lnstark.lbatis.core.Configuration;
-import lnstark.lbatis.core.LDataSource;
-import lnstark.lbatis.core.SqlSession;
-import lnstark.lbatis.core.SqlSessionFactory;
+import lnstark.lbatis.core.configuration.Configuration;
+import lnstark.lbatis.core.configuration.LDataSource;
+import lnstark.lbatis.core.session.SqlSession;
+import lnstark.lbatis.core.session.SqlSessionFactory;
+import lnstark.lbatis.entity.Song;
 import lnstark.lbatis.mapper.BlogMapper;
-import lnstark.lbatis.util.LLog;
-import lnstark.lbatis.util.StringUtil;
+import lnstark.lbatis.core.util.LLog;
 
 public class TestLBatis extends TestCase {
 
@@ -35,8 +35,8 @@ public class TestLBatis extends TestCase {
             Map<String, Object> param = new HashMap<>();
             param.put("name", "天");
             param.put("id", 1);
-            List<Map<String, Object>> l = mapper.selectLBatisBeanByMap(param);
-            for (Map<String, Object> m : l) {
+            List<Song> l = mapper.selectSongByMap(param);
+            for (Song m : l) {
                 log.info(m);
             }
         } catch (IOException e) {

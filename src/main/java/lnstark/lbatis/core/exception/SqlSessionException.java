@@ -1,4 +1,4 @@
-package lnstark.lbatis.exception;
+package lnstark.lbatis.core.exception;
 
 public class SqlSessionException extends RuntimeException{
 

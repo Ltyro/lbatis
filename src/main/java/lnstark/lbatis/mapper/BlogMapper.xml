@@ -18,4 +18,10 @@
     	where name like concat('%', #{name, jdbcType=VARCHAR}, '%')
     	and id = #{id}
 	</select>
+
+	<select id="selectSongByMap" resultType="lnstark.lbatis.entity.Song">
+    	select * from song t
+    	where name like concat('%', #{name, jdbcType=VARCHAR}, '%')
+    	and id = #{id}
+	</select>
 </mapper>

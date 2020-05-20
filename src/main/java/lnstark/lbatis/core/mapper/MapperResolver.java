@@ -6,14 +6,15 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import lnstark.lbatis.core.exception.SqlParseException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import lnstark.lbatis.exception.MapperParseException;
-import lnstark.lbatis.exception.SqlSessionException;
-import lnstark.lbatis.util.Validator;
+import lnstark.lbatis.core.exception.MapperParseException;
+import lnstark.lbatis.core.exception.SqlSessionException;
+import lnstark.lbatis.core.util.Validator;
 
 /**
  * 
@@ -62,7 +63,10 @@ public class MapperResolver {
 	}
 
 	public String getSql(String methodName, Object[] args) {
-		String content = nodes.get(methodName).content;
+		MapperNode mn = nodes.get(methodName);
+		if (mn == null)
+			throw new MapperParseException("sql \"" + methodName + "\" not found in " + xmlMapperPath);
+		String content = mn.content;
 		return content;
 		
 	}
