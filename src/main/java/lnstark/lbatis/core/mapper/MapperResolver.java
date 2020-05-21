@@ -1,19 +1,28 @@
 package lnstark.lbatis.core.mapper;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import lnstark.lbatis.core.exception.SqlParseException;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
 import lnstark.lbatis.core.exception.MapperParseException;
 import lnstark.lbatis.core.exception.SqlSessionException;
+import lnstark.lbatis.core.util.LLog;
 import lnstark.lbatis.core.util.Validator;
 
 /**
@@ -30,6 +39,10 @@ public class MapperResolver {
 	private Document document = null;
 	
 	private Map<String, MapperNode> nodes;
+	
+	private LLog log = LLog.getInstace(MapperResolver.class);
+	
+	private static String[] crud = {"select", "delete", "update", "insert"};
 	
 	public MapperResolver(String xmlMapperPath) {
 		this.xmlMapperPath = xmlMapperPath;
@@ -52,11 +65,15 @@ public class MapperResolver {
 		File xmlMapper = new File(xmlMapperPath);
 		if(!xmlMapper.exists())
 			throw new SqlSessionException(xmlMapperPath + " not found!");
+		
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder documentBuilder = null;
 		Document document = null;
-		SAXReader reader = new SAXReader();
+//		SAXReader reader = new SAXReader();
 		try {
-			document = reader.read(xmlMapper);
-		} catch (DocumentException e) {
+			documentBuilder = factory.newDocumentBuilder();
+			document = documentBuilder.parse(xmlMapper);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
 			e.printStackTrace();
 		}
 		return document;
@@ -77,14 +94,19 @@ public class MapperResolver {
 	 */
 	public void parseMapper() throws ClassNotFoundException {
 		
-		Element root = document.getRootElement();
-		
-		for (Element e : root.elements()) {
-			String id = e.attributeValue("id");
+		Element root = document.getDocumentElement();
+		log.debug("根元素：" + root.getNodeName());
+		NodeList nl = root.getChildNodes();
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node n = nl.item(i);
+			if (!isCRUDNode(n))
+				continue;
+			
+			String id = getNodeAttr(n, "id");
 			if (Validator.isNull(id))
 				throw new MapperParseException("id should not be empty(occured while parsing " + xmlMapperPath + ").");
-			String parameterType = e.attributeValue("parameterType");
-			String resultType = e.attributeValue("resultType");
+			String parameterType = getNodeAttr(n, "parameterType");
+			String resultType = getNodeAttr(n, "resultType");
 			MapperNode node = new MapperNode(id);
 			
 			if (!Validator.isNull(parameterType)) {
@@ -97,10 +119,49 @@ public class MapperResolver {
 				node.resultType = c;
 			}
 			
-			node.content = e.getStringValue();
+			node.content = parseContent(n);
 			nodes.put(id, node);
 		}
 		
+	}
+	
+	/**
+	 * parse sql node
+	 */
+	private String parseContent(Node n) {
+		NodeList children = n.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			Node c = children.item(i);
+			// analyze if
+			if ("if".equals(c.getNodeName())) {
+				String statement = getNodeAttr(c, "test");
+				boolean b = parseIFStatement(statement);
+			}
+		}
+		return n.getTextContent();
+	}
+
+	private static boolean parseIFStatement(String statement) {
+//		str.
+		return false;
+	}
+
+	public static void main(String[] args) {
+		String str = " 1 == 1 and (true or false)";
+		System.out.println(parseIFStatement(str));
+	}
+	
+	private String getNodeAttr(Node n, String attr) {
+		Node attrNode = n.getAttributes().getNamedItem(attr);
+		return attrNode == null ? null : attrNode.getNodeValue();
+	}
+	
+	private boolean isCRUDNode(Node n) {
+		String name = n.getNodeName();
+		for (String s : crud)
+			if (name.contains(s))
+				return true;
+		return false;
 	}
 	
 	class MapperNode {

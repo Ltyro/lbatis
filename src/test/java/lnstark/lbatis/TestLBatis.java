@@ -40,11 +40,9 @@ public class TestLBatis extends TestCase {
             
             param.put("name", "角港");
             param.put("id", "034c12921ebf472c8351d66a10323f6e");
-            HzrRiver l = mapper.selectSingleBeanByMap(param);
+            param.put("id", null);
+            List<HzrRiver> l = mapper.selectRiverByMap(param);
             log.info(l);
-//            for (Map<String, Object> m : l) {
-//                log.info(m);
-//            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ package lnstark.lbatis.core.mapper;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 import lnstark.lbatis.core.util.StringUtil;
@@ -47,7 +48,7 @@ public class SqlParseResult {
 	private void setParam(PreparedStatement st, Object o, int i) throws SQLException {
 		
 		if (o == null)
-			return;
+			st.setNull(i, Types.VARCHAR);
 		
 		if (o instanceof String || o instanceof Character) {
 			st.setString(i, o.toString());

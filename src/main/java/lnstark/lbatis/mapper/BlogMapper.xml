@@ -38,6 +38,9 @@
 	<select id="selectRiverByMap" resultType="lnstark.lbatis.entity.HzrRiver">
     	select id, name, grade from hzr_River t
     	where name like '%' + #{name, jdbcType=VARCHAR} + '%'
-    	and id = #{id}
+    	<if test="id != null">
+    		and id = #{id}
+    	</if>
+    	order by name
 	</select>
 </mapper>
