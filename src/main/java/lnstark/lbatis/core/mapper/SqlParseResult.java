@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import lnstark.lbatis.core.util.StringUtil;
+
 /**
  * sql parse result
  * 
@@ -67,5 +69,22 @@ public class SqlParseResult {
 		
 	}
 	
+	public String getPreparedSqlForLog() {
+		return "==>  Preparing: " + prepareSql.trim();
+	}
 	
+	public String getParametersForLog() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("==> Parameters: ");
+		String[] strs = new String[params.size()];
+		int i = 0;
+		for (Object o : params) {
+			if (o == null)
+				strs[i++] = "null";
+			else
+				strs[i++] = o.toString() + "(" + o.getClass().getSimpleName() + ")";
+		}
+		sb.append(StringUtil.join(strs, ", "));
+		return sb.toString();
+	}
 }

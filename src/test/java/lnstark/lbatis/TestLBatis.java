@@ -12,6 +12,7 @@ import lnstark.lbatis.core.configuration.Configuration;
 import lnstark.lbatis.core.configuration.LDataSource;
 import lnstark.lbatis.core.session.SqlSession;
 import lnstark.lbatis.core.session.SqlSessionFactory;
+import lnstark.lbatis.entity.HzrRiver;
 import lnstark.lbatis.entity.Song;
 import lnstark.lbatis.mapper.BlogMapper;
 import lnstark.lbatis.core.util.LLog;
@@ -33,12 +34,17 @@ public class TestLBatis extends TestCase {
         try (SqlSession session = sessionFactory.openSession()) {
             BlogMapper mapper = session.getMapper(BlogMapper.class);
             Map<String, Object> param = new HashMap<>();
-            param.put("name", "天");
-            param.put("id", 1);
-            List<Song> l = mapper.selectSongByMap(param);
-            for (Song m : l) {
-                log.info(m);
-            }
+//            param.put("name", "天");
+//            param.put("id", 1);
+//            List<Song> l = mapper.selectSongByMap(param);
+            
+            param.put("name", "角港");
+            param.put("id", "034c12921ebf472c8351d66a10323f6e");
+            HzrRiver l = mapper.selectSingleBeanByMap(param);
+            log.info(l);
+//            for (Map<String, Object> m : l) {
+//                log.info(m);
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }

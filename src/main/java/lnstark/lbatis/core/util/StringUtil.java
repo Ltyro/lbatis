@@ -40,5 +40,15 @@ public class StringUtil {
                 .toString();
     }
 
-
+    public static String join(String strs[], String j) {
+    	if (strs == null || strs.length == 0)
+    		return "";
+    	StringBuilder sb = new StringBuilder();
+    	for (int i = 0; i < strs.length - 1; i++) {
+    		sb.append(strs[i]).append(j);
+    	}
+    	sb.append(strs[strs.length - 1]);
+    	return sb.toString();
+    }
+    
 }

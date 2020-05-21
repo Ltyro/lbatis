@@ -13,15 +13,31 @@
     	where id = #{id, jdbcType=VARCHAR} limit 0, 10
 	</select>
 	
+	<select id="selectSingleMapByMap" resultType="java.util.Map">
+    	select * from hzr_River t
+    	where name like '%' + #{name, jdbcType=VARCHAR} + '%'
+	</select>
+	
+	<select id="selectSingleBeanByMap" resultType="lnstark.lbatis.entity.HzrRiver">
+    	select top 1 id, name, grade from hzr_River t
+    	where name like '%' + #{name, jdbcType=VARCHAR} + '%'
+	</select>
+	
 	<select id="selectLBatisBeanByMap" resultType="java.util.Map">
-    	select * from song t
-    	where name like concat('%', #{name, jdbcType=VARCHAR}, '%')
+    	select * from hzr_River t
+    	where name like '%' + #{name, jdbcType=VARCHAR} + '%'
     	and id = #{id}
 	</select>
 
 	<select id="selectSongByMap" resultType="lnstark.lbatis.entity.Song">
     	select * from song t
     	where name like concat('%', #{name, jdbcType=VARCHAR}, '%')
+    	and id = #{id}
+	</select>
+	
+	<select id="selectRiverByMap" resultType="lnstark.lbatis.entity.HzrRiver">
+    	select id, name, grade from hzr_River t
+    	where name like '%' + #{name, jdbcType=VARCHAR} + '%'
     	and id = #{id}
 	</select>
 </mapper>

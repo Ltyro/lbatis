@@ -80,7 +80,8 @@ public class SqlSession implements Closeable {
 	private Object executeMethod(Method method, Object[] args) {
 		String sql = mapperWrapper.getSql(method, args);
 		SqlParseResult sqlParseResult = new SqlParser(sql, method, args).parse();
-		log.debug("==>  Preparing: " + sqlParseResult.getPrepareSql().trim(), method);
+		log.debug(sqlParseResult.getPreparedSqlForLog(), method);
+		log.debug(sqlParseResult.getParametersForLog(), method);
 		Object result = null;
 		try {
 			PreparedStatement statement = conn.prepareStatement(sqlParseResult.getPrepareSql(), ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);

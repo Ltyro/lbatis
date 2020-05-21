@@ -16,6 +16,7 @@ import java.util.Map;
 
 import lnstark.lbatis.core.exception.MapperParseException;
 import lnstark.lbatis.core.exception.ResultParseException;
+import lnstark.lbatis.core.util.ClassUtil;
 import lnstark.lbatis.core.util.LLog;
 import lnstark.lbatis.core.util.StringUtil;
 
@@ -86,58 +87,71 @@ public class MapperWrapper {
 		resultSet.beforeFirst();
 		log.debug("<==      Total: " + size, method);
 		if (size > 1 && singleResult)
-			throw new MapperParseException("query result is more than one.");
+			throw new MapperParseException("query result is more than one.", method);
+		Map<String, Method> methodMap = ClassUtil.getMethodMap(beanClz);
+		
+		boolean isMap = beanClz == Map.class || beanClz == HashMap.class || beanClz == LinkedHashMap.class;
+		
+		if (beanClz == Map.class)
+			beanClz = LinkedHashMap.class;
 		
 		if (!singleResult) {
-			if (beanClz == Map.class || beanClz == HashMap.class || beanClz == LinkedHashMap.class) {
-				if (beanClz == Map.class)
-					beanClz = HashMap.class;
-			
-				while (resultSet.next()) {
-					ResultSetMetaData md = resultSet.getMetaData();
-					int columnCount = md.getColumnCount();
-					
-					Map result = null;
-					result = (Map) beanClz.newInstance();
-					
-					for (int i = 1; i <= columnCount; i++) {
-						String columnName = md.getColumnName(i);
-						Object value = resultSet.getObject(i);
-						result.put(columnName, value);
-					}
-					resultList.add(result);
-				}
+			if (size == 0)
 				return resultList;
-			} else {
-				while (resultSet.next()) {
-					ResultSetMetaData md = resultSet.getMetaData();
-					int columnCount = md.getColumnCount();
-
-					Object result = null;
-					result = beanClz.newInstance();
-
-					for (int i = 1; i <= columnCount; i++) {
-						String columnName = md.getColumnName(i);
-						Object value = resultSet.getObject(i);
-						Method m = null;
-						String methodName = StringUtil.getSetter(columnName);
-						try {
-							m = beanClz.getMethod(methodName, Class.forName(md.getColumnClassName(i)));
-						} catch (NoSuchMethodException e) {
-							throw new ResultParseException("method \"" + methodName + "\" not found.");
-						}
-						m.invoke(result, value);
-					}
-					resultList.add(result);
-				}
-				return resultList;
+			while (resultSet.next()) {
+				Object result = null;
+				result = isMap ? constructMap(resultSet, beanClz) 
+							: constructBean(resultSet, beanClz, methodMap);
+				resultList.add(result);
 			}
-			
+			return resultList;
 		}
+		if (size == 0)
+			return null;
+		resultSet.next();
+		resultObj = isMap ? constructMap(resultSet, beanClz) 
+					: constructBean(resultSet, beanClz, methodMap);
 			
 		return resultObj;
 	}
 
+	/**
+	 * construct map data
+	 */
+	private Map constructMap(ResultSet resultSet, Class<?> beanClz) 
+			throws InstantiationException, IllegalAccessException, SQLException {
+		ResultSetMetaData md = resultSet.getMetaData();
+		int columnCount = md.getColumnCount();
+		Map result = (Map) beanClz.newInstance();
+		for (int i = 1; i <= columnCount; i++) {
+			String columnName = md.getColumnName(i);
+			Object value = resultSet.getObject(i);
+			result.put(columnName, value);
+		}
+		return result;
+	}
+	
+	/**
+	 * construct bean data
+	 */
+	private Object constructBean(ResultSet resultSet, Class<?> beanClz, Map<String, Method> methodMap) 
+			throws InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException {
+		ResultSetMetaData md = resultSet.getMetaData();
+		int columnCount = md.getColumnCount();
+		Object result = beanClz.newInstance();
+		for (int i = 1; i <= columnCount; i++) {
+			String columnName = md.getColumnName(i);
+			Object value = resultSet.getObject(i);
+			String methodName = StringUtil.getSetter(columnName);
+			Method setterMethod = null;
+			if ((setterMethod = methodMap.get(methodName)) != null) {
+				setterMethod.invoke(result, value);
+			}
+		}
+		return result;
+		
+	}
+	
 	private String removeGeneric(String name) {
 		int firstLTIndex = name.indexOf("<");
 		return firstLTIndex == -1 ? name : name.substring(0, firstLTIndex);
